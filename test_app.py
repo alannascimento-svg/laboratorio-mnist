@@ -30,8 +30,9 @@ pasta.mkdir(parents=True)
 print('Aviso fora do protocolo JSON', flush=True)
 print(json.dumps({'tipo': 'progresso', 'campos': {
     'fase': 'Processo simulado aguardando parada',
-    'epoca': 1, 'perdas': [2.5], 'pasta_execucao': str(pasta.resolve())
-}}), flush=True)
+    'epoca': 1, 'perdas': [2.5], 'pasta_execucao': str(pasta.resolve()),
+    'detalhe': 'Verificação em português: época, ação, interrupção'
+}}, ensure_ascii=False), flush=True)
 if config['semente'] == 100:
     resultado = {'config': config, 'perdas': [2.5], 'acuracia': 0.5,
                  'segundos': 0.01, 'parametros': 1, 'melhor_epoca': 1,
@@ -204,6 +205,7 @@ class TestAppHTTP(unittest.TestCase):
         self.assertIsNotNone(primeiro)
         self.assertIsNone(primeiro.poll())
         self.assertEqual(estado['perdas'], [2.5])
+        self.assertEqual(estado['detalhe'], 'Verificação em português: época, ação, interrupção')
         self.assertEqual(estado['config'], config)
         self.assertEqual(self.requisitar('POST', '/api/treinar', config)[0], 409)
         # Uma origem externa também não pode interromper um treino legítimo.

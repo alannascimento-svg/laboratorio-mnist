@@ -93,7 +93,8 @@ def iniciar(config):
         if estado['ativo']:
             return False
         ambiente = os.environ.copy()
-        ambiente.update(OMP_NUM_THREADS='2', OPENBLAS_NUM_THREADS='2', MKL_NUM_THREADS='2')
+        ambiente.update(OMP_NUM_THREADS='2', OPENBLAS_NUM_THREADS='2', MKL_NUM_THREADS='2',
+                        PYTHONIOENCODING='utf-8', PYTHONUTF8='1')
         proc = subprocess.Popen([sys.executable, str(BASE / 'executar_treino.py')],
                                 cwd=BASE, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT, text=True, encoding='utf-8',
