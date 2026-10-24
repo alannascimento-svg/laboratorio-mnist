@@ -49,7 +49,8 @@ class TestModelo(unittest.TestCase):
                 rede = construir_rede(Config(**pacote['config']))
                 rede.load_state_dict(pacote['pesos'])
                 rede.eval()
-                indices = np.load(Path(r['pasta']) / 'divisao.npz')['teste']
+                with np.load(Path(r['pasta']) / 'divisao.npz') as arquivo:
+                    indices = arquivo['teste'].copy()
                 with torch.inference_mode():
                     previstos = rede(torch.from_numpy(X[indices[:12]].reshape(-1,1,28,28))).argmax(1).tolist()
                 self.assertEqual(previstos, [e['previsto'] for e in r['exemplos']])
@@ -93,8 +94,8 @@ class TestModelo(unittest.TestCase):
             rede.eval()
             with torch.inference_mode():
                 previstos = rede(torch.from_numpy(X[teste].reshape(-1, 1, 28, 28))).argmax(1).numpy()
-            salvo = np.load(Path(a['pasta']) / 'previsoes_teste.npz')
-            np.testing.assert_array_equal(salvo['previstos'], previstos)
+            with np.load(Path(a['pasta']) / 'previsoes_teste.npz') as salvo:
+                np.testing.assert_array_equal(salvo['previstos'], previstos)
 
     def test_rbf_gaussiana_e_centros_fixos(self):
         from modelos_classicos import RedeRBF

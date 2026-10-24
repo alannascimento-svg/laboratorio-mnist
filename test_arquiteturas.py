@@ -73,7 +73,8 @@ class TestArquiteturas(unittest.TestCase):
                 self.assertEqual(r['melhor_epoca'], int(np.argmin(r['perdas_validacao'])) + 1)
                 self.assertEqual(sum(map(sum, r['matriz'])), 20)
                 self.assertEqual(r['arquitetura_detalhes'], descrever(nome, 'compacto'))
-                indices = np.load(Path(r['pasta']) / 'divisao.npz')
+                with np.load(Path(r['pasta']) / 'divisao.npz') as arquivo:
+                    indices = {chave: arquivo[chave].copy() for chave in arquivo.files}
                 for chave, esperado in zip(('treino', 'validacao', 'teste'), referencia):
                     np.testing.assert_array_equal(indices[chave], esperado)
                 pacote = torch.load(Path(r['pasta']) / 'modelo.pt', weights_only=True)
@@ -82,7 +83,8 @@ class TestArquiteturas(unittest.TestCase):
                 rede.eval()
                 with torch.inference_mode():
                     previstos = rede(torch.from_numpy(X[indices['teste']].reshape(-1, 1, 28, 28))).argmax(1).numpy()
-                np.testing.assert_array_equal(previstos, np.load(Path(r['pasta']) / 'previsoes_teste.npz')['previstos'])
+                with np.load(Path(r['pasta']) / 'previsoes_teste.npz') as salvo:
+                    np.testing.assert_array_equal(previstos, salvo['previstos'])
                 self.assertTrue((Path(r['pasta']) / 'codigo_fonte' / 'arquiteturas.py').exists())
 
     def test_residuos_somam_atalho_e_inception_concatena_ramos(self):
